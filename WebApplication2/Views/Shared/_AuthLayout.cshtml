@@ -1,0 +1,48 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>پنل مدیریت | صفحه ورود</title>
+  <!-- Tell the browser to be responsive to screen width -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" type="text/css" href="~/plugins/font-awesome/css/font-awesome.min.css"/>
+ <!-- Theme style -->
+  <link rel="stylesheet" href="~/dist/css/adminlte.min.css">
+  <!-- iCheck -->
+  <link rel="stylesheet" href="~/plugins/iCheck/square/blue.css">
+
+  <!-- bootstrap rtl -->
+  <link rel="stylesheet" href="~/dist/css/bootstrap-rtl.min.css">
+  <!-- template rtl version -->
+  <link rel="stylesheet" href="~/dist/css/custom-style.css">
+</head>
+<body class="hold-transition login-page">
+<div class="login-box">
+  <div class="login-logo">
+    <a href="../../index2.html"></a>
+  </div>
+  <!-- /.login-logo -->
+@RenderBody()
+</div>
+<!-- /.login-box -->
+
+<!-- jQuery -->
+<script src="~/plugins/jquery/jquery.min.js"></script>
+<!-- Bootstrap 4 -->
+<script src="~/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+<!-- iCheck -->
+<script src="~/plugins/iCheck/icheck.min.js"></script>
+<script>
+  $(function () {
+    $('input').iCheck({
+      checkboxClass: 'icheckbox_square-blue',
+      radioClass   : 'iradio_square-blue',
+      increaseArea : '20%' // optional
+    })
+  })
+</script>
+</body>
+</html>

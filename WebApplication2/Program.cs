@@ -1,8 +1,14 @@
+using Microsoft.EntityFrameworkCore;
+using WebApplication2.Data;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddControllersWithViews();
-
+builder.Services.AddControllersWithViews().AddRazorRuntimeCompilation();
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+{
+    options.UseSqlServer("Server=.;Database=TestDb2;User Id=sa;Password=123456789;");
+});
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

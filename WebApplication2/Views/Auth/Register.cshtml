@@ -1,0 +1,57 @@
+﻿@model WebApplication2.Models.Auth.RegisterPost
+@{
+    Layout = "_AuthLayout";
+}
+
+<div class="card">
+    <div class="card-body login-card-body">
+        <p class="login-box-msg">فرم زیر را تکمیل کنید و ورود بزنید</p>
+
+        <form  method="post">
+            <div class="input-group mb-3">
+                <input type="text" class="form-control" asp-for="Username" placeholder="شماره همراه">
+                <div class="input-group-append">
+                    <span class="fa fa-envelope input-group-text"></span>
+                </div>
+
+            </div>
+            <span class="text-danger" asp-validation-for="Username"></span>
+
+            <div class="input-group mb-3">
+                <input type="password" class="form-control" asp-for="Password" placeholder="رمز عبور">
+
+                <div class="input-group-append">
+                    <span class="fa fa-lock input-group-text"></span>
+                </div>
+            </div>
+                                      <span class="text-danger" asp-validation-for="Password"></span>
+
+            <div class="input-group mb-3">
+                <input type="password" asp-for="RePassword" class="form-control" placeholder="تکرار رمز عبور">
+
+                <div class="input-group-append">
+                    <span class="fa fa-lock input-group-text"></span>
+                </div>
+            </div>
+                                       <span class="text-danger" asp-validation-for="RePassword"></span>
+
+            <div class="row">
+              
+                <!-- /.col -->
+                <div class="col-4">
+                    <button type="submit" class="btn btn-primary btn-block btn-flat">ثبت نام</button>
+                </div>
+                <!-- /.col -->
+            </div>
+        </form>
+
+
+        <p class="mb-1">
+            <a href="#">رمز عبورم را فراموش کرده ام.</a>
+        </p>
+        <p class="mb-0">
+            <a href="register.html" class="text-center">ورود</a>
+        </p>
+    </div>
+    <!-- /.login-card-body -->
+</div>

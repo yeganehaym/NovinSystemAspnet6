@@ -1,0 +1,15 @@
+﻿@model List<WebApplication2.Models.Products.ProductGet>
+<div class="row">
+    @{
+        foreach (var productGet in Model)
+        {
+            <div class="card" style="width: 18rem;">
+                <img class="card-img-top" src="~/images/@productGet.Image" alt="Card image cap">
+                <div class="card-body">
+                    <h5 class="card-title">@productGet.Name (@productGet.Price)</h5>
+                    <p class="card-text">@productGet.Description</p>
+                </div>
+            </div>
+        }
+    }
+</div>
