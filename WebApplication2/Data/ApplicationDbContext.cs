@@ -24,6 +24,8 @@ public class ApplicationDbContext:DbContext
         modelBuilder.Entity<OtpCode>().HasIndex(x => x.Code).IsUnique();
         
         modelBuilder.ApplyConfiguration(new UserConfig());
+        modelBuilder.ApplyConfiguration(new CustomerConfig());
+        modelBuilder.ApplyConfiguration(new InvoiceItemConfig());
         
         base.OnModelCreating(modelBuilder);
     }
@@ -31,4 +33,8 @@ public class ApplicationDbContext:DbContext
     public DbSet<Product> Products { get; set; }
     public DbSet<User> Users { get; set; }
     public DbSet<OtpCode> OtpCodes { get; set; }
+    public DbSet<ProductService> ProductServices { get; set; }
+    public DbSet<Invoice> Invoices { get; set; }
+    public DbSet<InvoiceItem> InvoiceItem { get; set; }
+    public DbSet<Customer> Customers { get; set; }
 }

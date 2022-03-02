@@ -11,7 +11,6 @@ public class OtpCode:BaseEntity
     public bool IsUsed { get; set; }
     public bool IsValid => !IsUsed && ExpireDate > DateTime.Now;
     public User User { get; set; }
-
     public bool IsValid2
     {
         get
