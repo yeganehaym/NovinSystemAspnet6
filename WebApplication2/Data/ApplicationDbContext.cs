@@ -1,5 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using WebApplication2.Data.Config;
 using WebApplication2.Data.Domains;
+using WebApplication2.Data.Entity;
 
 namespace WebApplication2.Data;
 
@@ -9,6 +11,24 @@ public class ApplicationDbContext:DbContext
     {
         
     }
-    
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        /*modelBuilder.Entity<User>().Property(x => x.FirstName).HasMaxLength(100);
+        modelBuilder.Entity<User>().Property(x => x.LastName).HasMaxLength(100);
+        modelBuilder.Entity<User>().Property(x => x.Username).HasMaxLength(15);
+        modelBuilder.Entity<User>().Property(x => x.Password).HasMaxLength(200);
+        modelBuilder.Entity<User>().Property(x => x.Email).HasMaxLength(200);
+        modelBuilder.Entity<User>().Property(x => x.MobileNumber).HasMaxLength(11);*/
+        modelBuilder.Entity<OtpCode>().Property(x => x.Code).HasMaxLength(6);
+        modelBuilder.Entity<OtpCode>().HasIndex(x => x.Code).IsUnique();
+        
+        modelBuilder.ApplyConfiguration(new UserConfig());
+        
+        base.OnModelCreating(modelBuilder);
+    }
+
     public DbSet<Product> Products { get; set; }
+    public DbSet<User> Users { get; set; }
+    public DbSet<OtpCode> OtpCodes { get; set; }
 }

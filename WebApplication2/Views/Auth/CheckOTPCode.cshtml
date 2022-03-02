@@ -1,0 +1,12 @@
+﻿@model WebApplication2.Models.Auth.OtpCodePost
+<div class="card card-info">
+    <div class="card-header"></div>
+    <div class="card-body">
+        <form method="post">
+            <div asp-validation-summary="All"></div>
+            <input type="text" class="form-control" asp-for="Code" placeholder="کد پیامک شده"/>
+            <span asp-validation-for="Code" class="text-danger"></span>
+            <button type="submit" class="btn btn-primary">تایید کد</button>
+        </form>
+    </div>
+</div>
