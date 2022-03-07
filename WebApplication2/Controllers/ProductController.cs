@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using WebApplication2.Data;
 using WebApplication2.Data.Entity;
@@ -20,7 +21,7 @@ public class ProductController : Controller
     }
     
     [HttpPost]
-    public IActionResult NewProduct(NewProductPost model)
+    public async Task<IActionResult> NewProduct(NewProductPost model)
     {
         if (ModelState.IsValid)
         {
@@ -31,7 +32,7 @@ public class ProductController : Controller
                 Price = model.Price,
                 ProductType =ProductType.Product
             };
-            _applicationDbContext.ProductServices.Add(product);
+            await _applicationDbContext.ProductServices.AddAsync(product);
             var rows = _applicationDbContext.SaveChanges();
             if (rows > 0)
             {
@@ -41,5 +42,14 @@ public class ProductController : Controller
         }
         return View(model);
     }
+
+    public async Task<IActionResult> Index()
+    {
+        var products =await _applicationDbContext
+            .ProductServices
+            .ToListAsync();
+
+        return View(products);
+    }  
     
 }

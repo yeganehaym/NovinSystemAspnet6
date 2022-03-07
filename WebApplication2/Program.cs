@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using WebApplication2.Data;
+using WebApplication2.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -7,8 +8,13 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews().AddRazorRuntimeCompilation();
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {
-    options.UseSqlServer("Server=.;Database=TestDb2;User Id=sa;Password=123456789;");
+    options.UseSqlServer(builder.Configuration.GetConnectionString("default"));
 });
+
+
+builder.Services.AddScoped<UserService>();
+builder.Services.AddScoped<ProductServices>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

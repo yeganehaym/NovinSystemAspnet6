@@ -4,16 +4,23 @@ using WebApplication2.Data;
 using WebApplication2.Data.Domains;
 using WebApplication2.Data.Entity;
 using WebApplication2.Models.Products;
+using WebApplication2.Services;
 
 namespace WebApplication2.Controllers;
 
 public class TestController : Controller
 {
     private ApplicationDbContext _applicationDbContext;
+    private UserService _userService;
+    private ProductServices _productServices;
+    private IConfiguration _configuration;
 
-    public TestController(ApplicationDbContext applicationDbContext)
+    public TestController(ApplicationDbContext applicationDbContext,UserService userService, ProductServices productServices, IConfiguration configuration)
     {
         _applicationDbContext = applicationDbContext;
+        _userService = userService;
+        _productServices = productServices;
+        _configuration = configuration;
     }
     public IActionResult Index()
     {
@@ -134,5 +141,36 @@ public class TestController : Controller
         _applicationDbContext.SaveChanges();
 
         return new EmptyResult();
+    }
+
+    public async Task<IActionResult> TestUser()
+    {
+        var user = new User()
+        {
+            Username = "09323456789",
+            MobileNumber = "09323456789",
+            Password = "123456",
+            FirstName = "ali",
+            LastName = "yeganeh"
+        };
+        await _userService.AddUserAsync(user);
+
+        await _productServices.AddProductAsync(new ProductService()
+        {
+            Name = "Test",
+            Price = 400000,
+        });
+        await _applicationDbContext.SaveChangesAsync();
+        return new EmptyResult();
+    }
+
+    public IActionResult Sms()
+    {
+        var apikey = _configuration["sms:ghasedak:apikey"];
+        if (String.IsNullOrEmpty(apikey))
+        {
+            throw new Exception("SMS Api Key Is Empty");
+        }
+        return Content(apikey);
     }
 }

@@ -5,16 +5,19 @@ using Microsoft.EntityFrameworkCore;
 using WebApplication2.Data;
 using WebApplication2.Data.Entity;
 using WebApplication2.Models.Auth;
+using WebApplication2.Services;
 
 namespace WebApplication2.Controllers;
 
 public class AuthController : Controller
 {
    private ApplicationDbContext _context;
+   private UserService _userService;
 
-   public AuthController(ApplicationDbContext context)
+   public AuthController(ApplicationDbContext context, UserService userService)
    {
       _context = context;
+      _userService = userService;
    }
 
    [HttpGet]
@@ -37,11 +40,11 @@ public class AuthController : Controller
    }
    
    [HttpPost]
-   public IActionResult Register(RegisterPost model)
+   public async Task<IActionResult> Register(RegisterPost model)
    {
       if (ModelState.IsValid)
       {
-         var checkUser = _context.Users.Any(u => u.Username == model.Username || u.MobileNumber == model.Username);
+         var checkUser =await _userService.IsUserExists(model.Username);
          if (checkUser)
          {
             ModelState.AddModelError("Username","این شماره قبلا ثبت شده است");
@@ -53,15 +56,15 @@ public class AuthController : Controller
             MobileNumber = model.Username,
             Password = model.Password
          };
-         _context.Users.Add(user);
+         await _userService.AddUserAsync(user);
          var otp = new OtpCode()
          {
             User = user,
             Code = "123456",
 
          };
-         _context.OtpCodes.Add(otp);
-         var rows=_context.SaveChanges();
+         await _userService.AddOtpCode(otp);
+         var rows=await _context.SaveChangesAsync();
          if (rows > 0)
          {
             return RedirectToAction("CheckOTPCode");
@@ -75,13 +78,11 @@ public class AuthController : Controller
       return View();
    }
    [HttpPost]
-   public IActionResult CheckOTPCode(OtpCodePost model)
+   public async Task<IActionResult> CheckOTPCode(OtpCodePost model)
    {
       if (ModelState.IsValid)
       {
-         var otp = _context.OtpCodes
-            .Include(x=>x.User)
-            .FirstOrDefault(o => o.Code == model.Code);
+         var otp =await _userService.GetOtpCodeAsync(model.Code);
          
          if (otp == null || otp.IsValid == false)
          {
@@ -95,7 +96,7 @@ public class AuthController : Controller
         
          otp.User.Status = UserStatus.Active;
          otp.IsUsed = true;
-         var row = _context.SaveChanges();
+         var row =await _context.SaveChangesAsync();
          if (row > 0)
             return RedirectToAction("Login");
       }

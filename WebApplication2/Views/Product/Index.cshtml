@@ -1,0 +1,23 @@
+﻿@model List<WebApplication2.Data.Entity.ProductService>
+
+<table class="table table-bordered table-striped">
+    <thead>
+    <tr>
+        <th>نام محصول</th>
+        <th>قیمت</th>
+        <th>کد محصول</th>
+    </tr>
+    </thead>
+    <tbody>
+    @{
+        foreach (var productService in Model)
+        {
+            <tr>
+                <td>@productService.Name</td>
+                <td>@productService.Price</td>
+                <td>@productService.Code</td>
+            </tr>
+        }
+    }
+    </tbody>
+</table>
