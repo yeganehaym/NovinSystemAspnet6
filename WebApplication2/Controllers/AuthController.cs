@@ -13,11 +13,13 @@ public class AuthController : Controller
 {
    private ApplicationDbContext _context;
    private UserService _userService;
+   private IConfiguration _configuration;
 
-   public AuthController(ApplicationDbContext context, UserService userService)
+   public AuthController(ApplicationDbContext context, UserService userService, IConfiguration configuration)
    {
       _context = context;
       _userService = userService;
+      _configuration = configuration;
    }
 
    [HttpGet]
@@ -60,13 +62,21 @@ public class AuthController : Controller
          var otp = new OtpCode()
          {
             User = user,
-            Code = "123456",
+            Code = Utils.RandomString(Utils.RandomType.Numbers,6)
 
          };
+        
          await _userService.AddOtpCode(otp);
          var rows=await _context.SaveChangesAsync();
          if (rows > 0)
          {
+            var apiKey = _configuration["sms:ghasedak:apikey"];
+            var ghasedak = new Ghasedak.Core.Api(apiKey);
+            var sendResult = await ghasedak.VerifyAsync(1, "RegtisterCode", new[] {user.MobileNumber}, otp.Code);
+            if (sendResult.Result.Code != 200)
+            {
+               throw new Exception("Send Sms Failed : " + sendResult.Result.Code);
+            }
             return RedirectToAction("CheckOTPCode");
          }
       }
