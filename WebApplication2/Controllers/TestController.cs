@@ -173,4 +173,27 @@ public class TestController : Controller
         }
         return Content(apikey);
     }
+
+    public IActionResult Cookie()
+    {
+        var cookie = Request.Cookies["testcookie"];
+        return Content("Cookie Value:" + cookie);
+    }
+    
+    public IActionResult WriteCookie()
+    {
+        Response.Cookies.Append("testcookie","this is a test cookie",new CookieOptions()
+        {
+            Expires = DateTimeOffset.Now.AddMinutes(1)
+        });
+        return Content("Cookie is Made");
+    }
+
+    public IActionResult TestString()
+    {
+        var x = new[] {"ali", "reza", "has,san"};
+        var text = String.Join("-", x);
+        var array = text.Split(new[] {'-', ','});
+        return Content(text);
+    }
 }
