@@ -1,5 +1,8 @@
 ﻿
 
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WebApplication2.Data;
@@ -29,11 +32,34 @@ public class AuthController : Controller
    }
 
    [HttpPost]
-   public IActionResult Login(LoginPost model)
+   public async Task<IActionResult> Login(LoginPost model)
    {
-      ModelState.AddModelError("global","نام کاربری یافت نشد");
+      if (ModelState.IsValid)
+      {
+         var user = await _userService.LoginAsync(model.Username, model.Password);
+         if (user == null)
+         {
+            ModelState.AddModelError("global","کاربر مورد نظر یافت نشد");
+            return View(model);
+         }
+
+         ClaimsIdentity claimsIdentity = new ClaimsIdentity(CookieAuthenticationDefaults.AuthenticationScheme);
+         claimsIdentity.AddClaim(new Claim(ClaimTypes.Name,user.Username));
+         claimsIdentity.AddClaim(new Claim(ClaimTypes.NameIdentifier,user.Id.ToString()));
+         claimsIdentity.AddClaim(new Claim(ClaimTypes.GivenName,user.FirstName + " " + user.LastName));
+         var prinicipal = new ClaimsPrincipal(claimsIdentity);
+         await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, prinicipal);
+         return RedirectToAction("Index", "Home");
+      }
       return View(model);
    }
+
+   public async Task<IActionResult> Logout()
+   {
+      await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+      return RedirectToAction("Login");
+   }
+
 
    [HttpGet]
    public IActionResult Register()

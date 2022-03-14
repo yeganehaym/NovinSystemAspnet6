@@ -232,7 +232,12 @@ namespace WebApplication2.Migrations
                     b.Property<int>("ProductType")
                         .HasColumnType("int");
 
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("ProductServices");
                 });
@@ -333,6 +338,17 @@ namespace WebApplication2.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("WebApplication2.Data.Entity.ProductService", b =>
+                {
+                    b.HasOne("WebApplication2.Data.Entity.User", "User")
+                        .WithMany("Products")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("WebApplication2.Data.Entity.Customer", b =>
                 {
                     b.Navigation("Invoices");
@@ -351,6 +367,8 @@ namespace WebApplication2.Migrations
             modelBuilder.Entity("WebApplication2.Data.Entity.User", b =>
                 {
                     b.Navigation("OtpCodes");
+
+                    b.Navigation("Products");
                 });
 #pragma warning restore 612, 618
         }

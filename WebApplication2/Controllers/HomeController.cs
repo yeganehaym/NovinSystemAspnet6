@@ -1,9 +1,12 @@
 ﻿using System.Diagnostics;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WebApplication2.Models;
 
 namespace WebApplication2.Controllers;
 
+[Authorize()]
 public class HomeController : Controller
 {
     private readonly ILogger<HomeController> _logger;
@@ -13,6 +16,7 @@ public class HomeController : Controller
         _logger = logger;
     }
 
+   
     public IActionResult Index()
     {
         return View();

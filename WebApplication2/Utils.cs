@@ -1,4 +1,6 @@
-﻿namespace WebApplication2;
+﻿using System.Security.Claims;
+
+namespace WebApplication2;
 
 public static class Utils
 {
@@ -24,5 +26,31 @@ public static class Utils
         All,
         Letters,
         Numbers
+    }
+
+    public static int GetUserId(this ClaimsPrincipal user)
+    {
+        var claim = user.Claims.First(x => x.Type == ClaimTypes.NameIdentifier);
+        var claimValue = claim.Value;
+        var userId = int.Parse(claimValue);
+        return userId;
+    }
+    
+    public static string GetUsername(this ClaimsPrincipal user)
+    {
+        var claim = user.Claims.First(x => x.Type == ClaimTypes.Name);
+        var claimValue = claim.Value;
+        return claimValue;
+    }
+    public static string GetFullName(this ClaimsPrincipal user)
+    {
+        var claim = user.Claims.First(x => x.Type == ClaimTypes.GivenName);
+        var claimValue = claim.Value;
+        return claimValue;
+    }
+
+    public static string MyExtensionMethod(this string s,string v)
+    {
+        return s + v;
     }
 }

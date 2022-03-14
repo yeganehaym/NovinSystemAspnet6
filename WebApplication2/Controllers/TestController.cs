@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using WebApplication2.Data;
 using WebApplication2.Data.Domains;
@@ -8,6 +10,7 @@ using WebApplication2.Services;
 
 namespace WebApplication2.Controllers;
 
+[Authorize]
 public class TestController : Controller
 {
     private ApplicationDbContext _applicationDbContext;
@@ -78,12 +81,16 @@ public class TestController : Controller
     
     public IActionResult AddData()
     {
+        var userId = User.GetUserId();
+   
+
         _applicationDbContext.ProductServices.Add(new ProductService()
         {
             Name = "شست و شو بدنه خودرو",
             Price = 10000,
             Code = "1245",
-            ProductType = ProductType.Service
+            ProductType = ProductType.Service,
+            UserId = userId
         });
         
         _applicationDbContext.ProductServices.Add(new ProductService()
@@ -91,14 +98,16 @@ public class TestController : Controller
             Name = "نظافت داخلی خودرو",
             Price = 20000,
             Code = "1345",
-            ProductType = ProductType.Service
+            ProductType = ProductType.Service,
+            UserId = userId
         });
         _applicationDbContext.ProductServices.Add(new ProductService()
         {
             Name = "اسفنج نانو",
             Price = 30000,
             Code = "1445",
-            ProductType = ProductType.Product
+            ProductType = ProductType.Product,
+            UserId = userId
         });
 
         _applicationDbContext.Customers.Add(new Customer()
@@ -189,6 +198,7 @@ public class TestController : Controller
         return Content("Cookie is Made");
     }
 
+    [AllowAnonymous]
     public IActionResult TestString()
     {
         var x = new[] {"ali", "reza", "has,san"};

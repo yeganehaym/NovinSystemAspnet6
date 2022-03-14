@@ -15,7 +15,10 @@
             <img src="https://www.gravatar.com/avatar/52f0fbcbedee04a121cba8dad1174462?s=200&d=mm&r=g" class="img-circle elevation-2" alt="User Image">
           </div>
           <div class="info">
-            <a href="#" class="d-block">حسام موسوی</a>
+         
+            <a href="#" class="d-block">
+              @User.GetFullName()
+            </a>
           </div>
         </div>
 
@@ -40,7 +43,7 @@
                   </a>
                 </li>
                 <li class="nav-item">
-                  <a href="./index2.html" class="nav-link">
+                  <a asp-controller="Product" asp-action="Index" class="nav-link">
                     <i class="fa fa-circle-o nav-icon"></i>
                     <p>لیست محصولات</p>
                   </a>
@@ -122,6 +125,13 @@
                     <p>درباره ما</p>
                   </a>
                 </li>
+                
+                 <li class="nav-item">
+                                  <a asp-controller="Auth" asp-action="Logout" class="nav-link">
+                                    <i class="fa fa-circle-o nav-icon"></i>
+                                    <p>خروج</p>
+                                  </a>
+                                </li>
                                                   
               </ul>
             </li>

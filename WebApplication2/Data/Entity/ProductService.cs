@@ -8,4 +8,7 @@ public class ProductService:BaseEntity
     public ProductType ProductType { get; set; }
     
     public List<InvoiceItem> InvoiceItems { get; set; }
+    
+    public User User { get; set; }
+    public int UserId { get; set; }
 }

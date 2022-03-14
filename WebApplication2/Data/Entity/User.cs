@@ -18,4 +18,5 @@ public class User:BaseEntity
     
     public UserStatus Status { get; set; }
     public List<OtpCode> OtpCodes { get; set; }
+    public List<ProductService> Products { get; set; }
 }

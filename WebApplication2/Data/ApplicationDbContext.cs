@@ -26,6 +26,7 @@ public class ApplicationDbContext:DbContext
         modelBuilder.ApplyConfiguration(new UserConfig());
         modelBuilder.ApplyConfiguration(new CustomerConfig());
         modelBuilder.ApplyConfiguration(new InvoiceItemConfig());
+        modelBuilder.ApplyConfiguration(new ProductConfig());
         
         base.OnModelCreating(modelBuilder);
     }
