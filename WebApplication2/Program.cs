@@ -1,5 +1,7 @@
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
+using WebApplication2;
 using WebApplication2.Data;
 using WebApplication2.Services;
 
@@ -21,8 +23,27 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
     {
         options.LoginPath = "/auth/login";
         options.LogoutPath = "/auth/logout";
+        options.AccessDeniedPath = "/auth/login";
         options.ExpireTimeSpan = TimeSpan.FromMinutes(15);
         options.SlidingExpiration = true;
+        options.Events = new CookieAuthenticationEvents()
+        {
+            OnValidatePrincipal = async context =>
+            {
+                var claim = context.Principal.Claims.First(x => x.Type == ClaimTypes.NameIdentifier);
+                var serialNo = context.Principal.Claims.First(x => x.Type == ClaimTypes.SerialNumber).Value;
+                var userId = int.Parse(claim.Value);
+              
+                var userService = context.HttpContext.RequestServices.GetService<UserService>();
+                var user = await userService.FindUserAsync(userId);
+                if (user.IsAdmin == false)
+                    context.RejectPrincipal();
+                if (serialNo != user.SerialNo)
+                {
+                    context.RejectPrincipal();
+                }
+            }
+        };
 
     });
 

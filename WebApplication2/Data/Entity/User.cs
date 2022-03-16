@@ -14,9 +14,14 @@ public class User:BaseEntity
     public string MobileNumber { get; set; }
     
     public string? ImageProfile { get; set; }
+    
+    public bool IsAdmin { get; set; }
+    public string SerialNo { get; set; }
 
+    
     
     public UserStatus Status { get; set; }
     public List<OtpCode> OtpCodes { get; set; }
     public List<ProductService> Products { get; set; }
+    public List<UserRole> UserRoles { get; set; }
 }

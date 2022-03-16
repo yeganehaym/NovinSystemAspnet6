@@ -13,5 +13,6 @@ public class LoginPost
     [MaxLength(15,ErrorMessage = "کلمه عبور نمی تواند بیش از 15 کارکتر باشد")]
     public string Password { get; set; }
     
+    public string? ReturnUrl { get; set; }
 
 }

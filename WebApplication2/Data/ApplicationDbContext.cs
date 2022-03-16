@@ -27,6 +27,7 @@ public class ApplicationDbContext:DbContext
         modelBuilder.ApplyConfiguration(new CustomerConfig());
         modelBuilder.ApplyConfiguration(new InvoiceItemConfig());
         modelBuilder.ApplyConfiguration(new ProductConfig());
+        modelBuilder.ApplyConfiguration(new UserRoleConfig());
         
         base.OnModelCreating(modelBuilder);
     }
@@ -38,4 +39,6 @@ public class ApplicationDbContext:DbContext
     public DbSet<Invoice> Invoices { get; set; }
     public DbSet<InvoiceItem> InvoiceItem { get; set; }
     public DbSet<Customer> Customers { get; set; }
+    public DbSet<Role> Roles { get; set; }
+    public DbSet<UserRole> UserRoles { get; set; }
 }

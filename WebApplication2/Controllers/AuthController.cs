@@ -1,11 +1,13 @@
 ﻿
 
+using System.Reflection;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WebApplication2.Data;
+using WebApplication2.Data.Domains;
 using WebApplication2.Data.Entity;
 using WebApplication2.Models.Auth;
 using WebApplication2.Services;
@@ -26,9 +28,13 @@ public class AuthController : Controller
    }
 
    [HttpGet]
-   public IActionResult Login()
+   public IActionResult Login(string? returnUrl)
    {
-      return View();
+      var loginpost = new LoginPost()
+      {
+         ReturnUrl = returnUrl
+      };
+      return View(loginpost);
    }
 
    [HttpPost]
@@ -47,9 +53,20 @@ public class AuthController : Controller
          claimsIdentity.AddClaim(new Claim(ClaimTypes.Name,user.Username));
          claimsIdentity.AddClaim(new Claim(ClaimTypes.NameIdentifier,user.Id.ToString()));
          claimsIdentity.AddClaim(new Claim(ClaimTypes.GivenName,user.FirstName + " " + user.LastName));
+         claimsIdentity.AddClaim(new Claim(ClaimTypes.SerialNumber,user.SerialNo));
+
+         var roles =await _userService.GetRolesAsync(user.Id);
+
+         foreach (var role in roles)
+         {
+            claimsIdentity.AddClaim(new Claim(ClaimTypes.Role,role.Name));
+         }
          var prinicipal = new ClaimsPrincipal(claimsIdentity);
          await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, prinicipal);
-         return RedirectToAction("Index", "Home");
+         
+         if(String.IsNullOrEmpty(model.ReturnUrl))
+            return RedirectToAction("Index", "Home");
+         return Redirect(model.ReturnUrl);
       }
       return View(model);
    }
@@ -72,19 +89,24 @@ public class AuthController : Controller
    {
       if (ModelState.IsValid)
       {
-         var checkUser =await _userService.IsUserExists(model.Username);
-         if (checkUser)
+         var user =await _userService.GetUserAsync(model.Username);
+         if (user!=null && user.Status!=UserStatus.None)
          {
             ModelState.AddModelError("Username","این شماره قبلا ثبت شده است");
             return View(model);
          }
-         var user = new User()
+         else if (user==null)
          {
-            Username = model.Username,
-            MobileNumber = model.Username,
-            Password = model.Password
-         };
-         await _userService.AddUserAsync(user);
+            user = new User()
+            {
+               Username = model.Username,
+               MobileNumber = model.Username,
+               Password = model.Password,
+               SerialNo = Utils.RandomString(Utils.RandomType.All,10)
+            };
+            await _userService.AddUserAsync(user);
+         }
+         
          var otp = new OtpCode()
          {
             User = user,
@@ -149,5 +171,19 @@ public class AuthController : Controller
       return Content("<strong>OTP</strong>","text/html");
       
       return View("OTP",otpCode);
+   }
+
+   public async Task<IActionResult> AccessList()
+   {
+      var result = Assembly.GetExecutingAssembly()
+         .GetTypes()
+         .Where(type => typeof(Controller).IsAssignableFrom(type))
+         .SelectMany(type => type.GetMethods(BindingFlags.Instance | BindingFlags.DeclaredOnly | BindingFlags.Public))
+         .Where(m => !m.GetCustomAttributes(typeof(System.Runtime.CompilerServices.CompilerGeneratedAttribute), true).Any())
+         .GroupBy(x => x.DeclaringType)
+         .Select(x => new AccessList(){ Controller = x.Key.Name, Actions = x.Select(s => s.Name).ToList() })
+         .ToList();
+      
+      return View(result);
    }
 }

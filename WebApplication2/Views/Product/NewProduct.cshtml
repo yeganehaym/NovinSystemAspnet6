@@ -5,28 +5,40 @@
         <h4>افزودن محصول جدید</h4>
     </div>
     <div class="card-body">
+       
+        @{
+            if (User.IsInRole("Hesabdar"))
+            {
+                <div class="alert alert-info">سامانه حسابداری</div>
+            }
+            else if (User.IsInRole("Anbardar"))
+            {
+                <div class="alert alert-info">سامانه انبارداری</div>
+            }
+        }
+
         <form method="post">
-           
-                <div class="text-danger" asp-validation-summary="All"></div>
-                <div class="form-group">
-                    <label for="exampleInputEmail1">کد محصول</label>
-                    <input type="text" class="form-control" placeholder="کد محصول(اختیاری)" asp-for="Code">
-                    <small class="form-text text-muted">در صورتی که کدی در سازمان برای این محصول ترتیب داده اید آن را وارد کنید</small>
-                </div>
 
-                <div class="form-group">
-                    <label for="exampleInputEmail1">عنوان محصول<span class="text-danger">*</span></label>
-                    <input type="text" class="form-control" placeholder="عنوان محصول" asp-for="Name">
-                    <small class="form-text text-muted"></small>
-                </div>
-                <div class="form-group">
-                    <label for="exampleInputEmail1">مبلغ محصول<span class="text-danger">*</span></label>
-                    <input type="text" class="form-control" placeholder="مبلغ محصول" asp-for="Price">
-                    <small class="form-text text-muted"></small>
-                </div>
+            <div class="text-danger" asp-validation-summary="All"></div>
+            <div class="form-group">
+                <label for="exampleInputEmail1">کد محصول</label>
+                <input type="text" class="form-control" placeholder="کد محصول(اختیاری)" asp-for="Code">
+                <small class="form-text text-muted">در صورتی که کدی در سازمان برای این محصول ترتیب داده اید آن را وارد کنید</small>
+            </div>
 
-                <button type="submit" class="btn btn-primary">درج محصول جدید</button>
-           
+            <div class="form-group">
+                <label for="exampleInputEmail1">عنوان محصول<span class="text-danger">*</span></label>
+                <input type="text" class="form-control" placeholder="عنوان محصول" asp-for="Name">
+                <small class="form-text text-muted"></small>
+            </div>
+            <div class="form-group">
+                <label for="exampleInputEmail1">مبلغ محصول<span class="text-danger">*</span></label>
+                <input type="text" class="form-control" placeholder="مبلغ محصول" asp-for="Price">
+                <small class="form-text text-muted"></small>
+            </div>
+
+            <button type="submit" class="btn btn-primary">درج محصول جدید</button>
+
         </form>
     </div>
 </div>

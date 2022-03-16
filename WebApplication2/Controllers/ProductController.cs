@@ -17,11 +17,15 @@ public class ProductController : Controller
     {
         _applicationDbContext = applicationDbContext;
     }
+    
+    [Authorize()]
     public IActionResult NewProduct()
     {
+        
         return View();
     }
     
+    [Authorize()]
     [HttpPost]
     public async Task<IActionResult> NewProduct(NewProductPost model)
     {

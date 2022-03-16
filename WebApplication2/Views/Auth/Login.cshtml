@@ -8,6 +8,7 @@
       <p class="login-box-msg">فرم زیر را تکمیل کنید و ورود بزنید</p>
 
       <form method="post">
+        <input type="hidden" asp-for="ReturnUrl"/>
         <div class="text-danger" asp-validation-summary="All"></div>
         <div class="input-group mb-3">
           <input type="text" class="form-control" asp-for="Username" placeholder="شماره همراه">
@@ -45,7 +46,7 @@
         <a href="#">رمز عبورم را فراموش کرده ام.</a>
       </p>
       <p class="mb-0">
-        <a href="register.html" class="text-center">ثبت نام</a>
+        <a asp-controller="Auth" asp-action="Register" class="text-center">ثبت نام</a>
       </p>
     </div>
     <!-- /.login-card-body -->

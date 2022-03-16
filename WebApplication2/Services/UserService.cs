@@ -28,6 +28,13 @@ public class UserService
                             || u.MobileNumber == username);
     }
 
+    public async Task<User> GetUserAsync(string username)
+    {
+        return await _applicationDbContext
+            .Users
+            .FirstOrDefaultAsync(x => x.Username == username);
+    }
+
     public async Task AddUserAsync(User user)
     {
         await _applicationDbContext
@@ -60,5 +67,15 @@ public class UserService
         return  await _applicationDbContext.OtpCodes
             .Include(x=>x.User)
             .FirstOrDefaultAsync(o => o.Code == code);
+    }
+
+    public async Task<List<Role>> GetRolesAsync(int userId)
+    {
+        return await _applicationDbContext
+            .UserRoles
+            .Include(x=>x.Role)
+            .Where(x => x.UserId == userId)
+            .Select(x=>x.Role)
+            .ToListAsync();
     }
 }

@@ -30,7 +30,9 @@ public static class Utils
 
     public static int GetUserId(this ClaimsPrincipal user)
     {
-        var claim = user.Claims.First(x => x.Type == ClaimTypes.NameIdentifier);
+        var claim = user.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier);
+        if (claim == null)
+            return 0;
         var claimValue = claim.Value;
         var userId = int.Parse(claimValue);
         return userId;

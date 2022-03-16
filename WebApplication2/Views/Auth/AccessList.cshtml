@@ -1,0 +1,13 @@
+﻿@model System.Collections.Generic.List<WebApplication2.Data.Domains.AccessList>
+
+@{
+    Layout = "_AuthLayout";
+    foreach (var controller in Model)
+    {
+        <strong>@controller.Controller</strong>
+        foreach (var action in controller.Actions)
+        {
+            <input type="checkbox" name="@action" />@action
+        }
+    }
+}

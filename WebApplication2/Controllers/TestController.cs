@@ -206,4 +206,42 @@ public class TestController : Controller
         var array = text.Split(new[] {'-', ','});
         return Content(text);
     }
+
+    [AllowAnonymous]
+    public IActionResult AddRole()
+    {
+        var role = new Role()
+        {
+            Name = "Hesabdar"
+        };
+        var role2 = new Role()
+        {
+            Name = "Anbardar"
+        };
+        _applicationDbContext.Roles.Add(role);
+        _applicationDbContext.Roles.Add(role2);
+        var userRole = new UserRole()
+        {
+            Role = role,
+            UserId = 1005
+        };
+        var userRole2 = new UserRole()
+        {
+            Role = role2,
+            UserId = 1005
+        };
+        _applicationDbContext.UserRoles.Add(userRole);
+        _applicationDbContext.UserRoles.Add(userRole2);
+        _applicationDbContext.SaveChanges();
+        _applicationDbContext.SaveChanges();
+        return new EmptyResult();
+    }
+
+    public async Task<IActionResult> ChangePassword()
+    {
+        var user =await _userService.FindUserAsync(1005);
+        user.SerialNo = Utils.RandomString(Utils.RandomType.All, 10);
+        await _applicationDbContext.SaveChangesAsync();
+        return new EmptyResult();
+    }
 }
