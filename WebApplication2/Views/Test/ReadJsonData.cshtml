@@ -1,0 +1,42 @@
+﻿
+<table id="mytable" class="table table-striped table-bordered">
+    <thead>
+    <tr>
+        <th>نام</th>
+        <th>ایمیل</th>
+        <th>متن کامنت</th>
+    </tr>
+ 
+    </thead>
+    <tbody>
+        
+    </tbody>
+</table>
+
+@section Header
+{
+    <link href="~/js/datatables.min.css" type="text/css" rel="stylesheet"/>
+    <link href="~/js/DataTables-1.11.5/css/dataTables.bootstrap4.min.css" type="text/css" rel="stylesheet"/>
+}
+@section Js
+{
+    <script src="~/js/datatables.min.js"></script>
+    <script>
+    $.ajax({
+    url :'https://jsonplaceholder.typicode.com/comments',
+    type:'get',
+    success:function(data) {
+      for (var i=0;i<data.length;i++)
+          {
+              var row="<tr><td>" + data[i].name + "</td><td>" + data[i].email + "</td><td>" + data[i].body + "</td></tr>"
+              $("#mytable").find("tbody").append(row);
+          }
+      
+          $('#mytable').DataTable();
+     
+    }
+    })
+    </script>
+    
+    
+}

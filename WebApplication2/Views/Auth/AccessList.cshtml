@@ -5,9 +5,16 @@
     foreach (var controller in Model)
     {
         <strong>@controller.Controller</strong>
+        <br/>
+
         foreach (var action in controller.Actions)
         {
             <input type="checkbox" name="@action" />@action
+            <br/>
         }
+        <br/>
+        <br/>
+        <br/>
+        <br/>
     }
 }

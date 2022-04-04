@@ -61,6 +61,9 @@ public class AuthController : Controller
          {
             claimsIdentity.AddClaim(new Claim(ClaimTypes.Role,role.Name));
          }
+         if(user.IsAdmin)
+            claimsIdentity.AddClaim(new Claim(ClaimTypes.Role,"admin"));
+         
          var prinicipal = new ClaimsPrincipal(claimsIdentity);
          await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, prinicipal);
          

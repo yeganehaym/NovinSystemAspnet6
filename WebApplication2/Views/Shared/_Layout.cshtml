@@ -18,6 +18,7 @@
   <!-- template rtl version -->
   <link rel="stylesheet" href="~/dist/css/custom-style.css">
 
+  @await  RenderSectionAsync("Header",false)
 </head>
 <body class="hold-transition sidebar-mini">
 <div class="wrapper">
@@ -26,8 +27,18 @@
   Html.RenderPartial("_NavBar");
 }
 
-  <!-- Main Sidebar Container -->
- @Html.Partial("_SideBar")
+<!-- Main Sidebar Container -->
+@{
+  if (User.IsInRole("admin"))
+  {
+    @Html.Partial("_AdminSideBar")
+  }
+  else
+  {
+    @Html.Partial("_SideBar")
+  }
+}
+
 
   
   <!-- Content Wrapper. Contains page content -->
@@ -62,5 +73,9 @@
 <script src="~/dist/js/pages/dashboard.js"></script>
 <!-- AdminLTE for demo purposes -->
 <script src="~/dist/js/demo.js"></script>
+    <script src="~/lib/jquery-unobtrusive-ajax.js"></script>
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+@await RenderSectionAsync("Js",false)
 </body>
 </html>

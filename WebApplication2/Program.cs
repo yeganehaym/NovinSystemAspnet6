@@ -36,8 +36,8 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
               
                 var userService = context.HttpContext.RequestServices.GetService<UserService>();
                 var user = await userService.FindUserAsync(userId);
-                if (user.IsAdmin == false)
-                    context.RejectPrincipal();
+                //if (user.IsAdmin == false)
+                    //context.RejectPrincipal();
                 if (serialNo != user.SerialNo)
                 {
                     context.RejectPrincipal();

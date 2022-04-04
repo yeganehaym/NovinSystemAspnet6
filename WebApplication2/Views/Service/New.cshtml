@@ -1,0 +1,95 @@
+﻿@model WebApplication2.Models.Products.NewProductPost
+
+<div class="card card-info">
+    <div class="card-header">
+        <h4>افزودن سرویس جدید</h4>
+    </div>
+    <div class="card-body">
+
+
+        <form method="post">
+
+            <div class="text-danger" asp-validation-summary="All"></div>
+            <div class="form-group">
+                <label for="exampleInputEmail1">کد سرویس</label>
+                <input type="text" class="form-control" placeholder="کد محصول(اختیاری)" asp-for="Code">
+                <small class="form-text text-muted">در صورتی که کدی در سازمان برای این محصول ترتیب داده اید آن را وارد کنید</small>
+            </div>
+
+            <div class="form-group">
+                <label for="exampleInputEmail1">عنوان سرویس<span class="text-danger">*</span></label>
+                <input type="text" class="form-control" placeholder="عنوان سرویس" asp-for="Name">
+                <small class="form-text text-muted"></small>
+            </div>
+            <div class="form-group">
+                <label for="exampleInputEmail1">مبلغ سرویس<span class="text-danger">*</span></label>
+                <input type="text" class="form-control" placeholder="مبلغ سرویس" asp-for="Price">
+                <small class="form-text text-muted"></small>
+            </div>
+
+            <button type="button" id="btnSubmit" class="btn btn-primary">درج سرویس جدید</button>
+
+        </form>
+    </div>
+</div>
+
+@section Header
+{
+<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+}
+
+@section Js
+{
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+    <script>
+    $("#btnSubmit").on('click',function (){
+        
+        var code=$("#Code").val();
+        var name=$("#Name").val();
+        var price=$("#Price").val();
+        var data={code, name, price};
+        console.log(data);
+    $.ajax({
+        url:'@Url.Action("New", "Service")',
+        type:'POST',
+        data:data,
+        success:function (data)
+        {
+            if (data.status)
+            {
+                Toastify({
+                  text: "سرویس با موفقیت اضافه شد",
+                  duration: 3000,
+                  close: true,
+                  gravity: "top", // `top` or `bottom`
+                  position: "center", // `left`, `center` or `right`
+                  stopOnFocus: true, // Prevents dismissing of toast on hover
+                  style: {
+                    background: "linear-gradient(to right, #00b09b, #96c93d)",
+                  },
+                  onClick: function(){} // Callback after click
+                }).showToast();
+            }
+            else
+            {
+                      Toastify({
+                                 text: "خطا در ارتباط با سرور",
+                                 duration: 3000,
+                                 close: true,
+                                 gravity: "top", // `top` or `bottom`
+                                 position: "center", // `left`, `center` or `right`
+                                 stopOnFocus: true, // Prevents dismissing of toast on hover
+                                 style: {
+                                   background: "linear-gradient(to right, #00b09b, #96c93d)",
+                                 },
+                                 onClick: function(){} // Callback after click
+                               }).showToast();
+            }
+        },
+        error:function (data){
+            console.log(data)
+        }
+    });
+ });   
+    </script>
+}

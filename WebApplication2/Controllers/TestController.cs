@@ -244,4 +244,9 @@ public class TestController : Controller
         await _applicationDbContext.SaveChangesAsync();
         return new EmptyResult();
     }
+
+    public IActionResult ReadJsonData()
+    {
+        return View();
+    }
 }

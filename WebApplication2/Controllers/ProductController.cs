@@ -49,6 +49,8 @@ public class ProductController : Controller
         }
         return View(model);
     }
+    
+    
 
     public async Task<IActionResult> Index()
     {
