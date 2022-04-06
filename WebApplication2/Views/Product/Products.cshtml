@@ -1,0 +1,102 @@
+﻿
+<table id="mytable" class="table table-bordered table-striped">
+    <thead>
+    <tr>
+        <td></td>
+        <th>نام محصول</th>
+        <th>قیمت</th>
+        <th>کد محصول</th>
+        <th>عملیات</th>
+    </tr>
+    </thead>
+    <tbody>
+    
+    </tbody>
+</table>
+@section Header
+{
+    <link href="~/js/datatables.min.css" type="text/css" rel="stylesheet"/>
+    <link href="~/js/DataTables-1.11.5/css/dataTables.bootstrap4.min.css" type="text/css" rel="stylesheet"/>
+}
+@section Js
+{
+    <script src="~/js/datatables.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/@@persian-tools/persian-tools/build/persian-tools.umd.js"></script>
+
+    <script>
+    
+    $(document).ready(function (){
+        var mytable=$("#mytable").DataTable({
+             ajax: {
+                    url:'@Url.Action("LoadProducts")',
+                    type: 'get'
+                },
+            serverSide: true,
+            "lengthMenu": [ [5,10, 25, 50, -1], [5,10, 25, 50, "All"] ],
+            "language":{
+                 "url":"/js/DataTables-1.11.5/persian.json"
+                 },
+        
+            columns:[
+                {
+                    "data": "id",
+                    render: function (data, type, row, meta) {
+                        return meta.row + meta.settings._iDisplayStart + 1;
+                    }
+                },
+                {data:"name"},
+                {data:"code",
+                render:function (data,n,record){ 
+                    console.log(data);
+                    console.log(record);
+                    //return '<span class="badge badge-danger">پرداخت ناموفق</span>';
+                    return PersianTools.digitsEnToFa(data)
+                    }
+                },
+                {data:"price",
+                render:function (data,n,record){ 
+                    console.log(data);
+                    console.log(record);
+                    return PersianTools.digitsEnToFa(PersianTools.addCommas(data))
+                    }
+                },
+                {data:"id",
+                orderable:false,
+                render:function (data,n,record){ 
+                        return `<a class="btn btn-warning" href="/products/edit/${data}">ویرایش</a>
+<button data-id="${data}"  class="btn btn-danger btn-remove">حذف</button>`;
+                        }
+                }
+            ]
+        });
+
+    
+    $("#mytable").on('click','.btn-remove',function (){
+          var id=$(this).data("id");
+          
+          if (confirm('Are you sure?'))
+          {
+              remove(id)
+          }
+         
+    });
+    
+    function remove(id){
+         $.ajax({
+                  url:'@Url.Action("RemoveProduct")',
+                  type:'post',
+                  data:{id},
+                  success:function (data)
+                  {
+                      if (data.status===true)
+                      {
+                          console.log('Deleted');
+                          mytable.ajax.reload()
+                      }
+                  }
+                  });
+        }
+            });
+    </script>
+}
