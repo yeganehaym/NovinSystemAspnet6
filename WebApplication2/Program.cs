@@ -1,8 +1,11 @@
 using System.Security.Claims;
+using Mapster;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 using WebApplication2;
 using WebApplication2.Data;
+using WebApplication2.Data.Entity;
+using WebApplication2.Models.Customers;
 using WebApplication2.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -68,5 +71,11 @@ app.UseAuthorization();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
+
+
+TypeAdapterConfig.GlobalSettings
+    .NewConfig<Customer, CustomerGet>()
+    .Ignore(dest=>dest.Id)
+    .Map(dest => dest.InsertTime, src => src.CreationDate);
 
 app.Run();

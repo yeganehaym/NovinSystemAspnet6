@@ -24,4 +24,5 @@ public class User:BaseEntity
     public List<OtpCode> OtpCodes { get; set; }
     public List<ProductService> Products { get; set; }
     public List<UserRole> UserRoles { get; set; }
+    
 }

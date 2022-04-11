@@ -1,0 +1,68 @@
+﻿
+<div class="card">
+    <div class="card-header">
+        
+    </div>
+    <div class="card-body">
+        
+        <select id="type" class="form-control" style="max-width: 100px">
+            <option selected  value="-1">همه</option>
+            <option  value="0">عادی</option>
+            <option value="1">سازمانی</option>
+        </select>
+       
+        <table id="mytable" class="table table-bordered table-striped">
+            <thead>
+            <tr>
+                <th>نام</th>
+                <th>نام خانوادگی</th>
+                <th>شماره همراه</th>
+                <th>نوع مشتری</th>
+            </tr>
+            </thead>
+            <tbody>
+
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@section Js
+{
+    <script>
+    var mytable=$("#mytable").DataTable({
+    serverSide:true,
+    ajax:{
+        url:'@Url.Action("LoadCustomers")',
+        type:'get',
+        data:function (d)
+        {
+            d.type=$("#type").val();
+            return d;
+        }
+    },
+    columns:[
+        {data:'firstName'},
+        {data:'lastName'},
+        {data:'mobile'},
+        {data:'customerType',render:function (data){
+                if (data ===0)
+                    return 'عادی';
+                return  'سازمانی'
+            }
+        },
+    ]
+    });
+    
+    $(document).on('change',"#type",function (){
+        mytable.ajax.reload();
+    });
+    
+    var clone=$("#type").clone();
+    $("#type").remove();
+    
+  
+    $("#mytable_wrapper").find("div:first").append(clone);
+    
+    </script>
+}

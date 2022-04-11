@@ -18,7 +18,11 @@
   <!-- template rtl version -->
   <link rel="stylesheet" href="~/dist/css/custom-style.css">
 
+      <link href="~/js/datatables.min.css" type="text/css" rel="stylesheet"/>
+      <link href="~/js/DataTables-1.11.5/css/dataTables.bootstrap4.min.css" type="text/css" rel="stylesheet"/>
+
   @await  RenderSectionAsync("Header",false)
+  
 </head>
 <body class="hold-transition sidebar-mini">
 <div class="wrapper">
@@ -75,7 +79,12 @@
 <script src="~/dist/js/demo.js"></script>
     <script src="~/lib/jquery-unobtrusive-ajax.js"></script>
     <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
-    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+<script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+
+    <script src="~/js/datatables.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/@@persian-tools/persian-tools/build/persian-tools.umd.js"></script>
+
 @await RenderSectionAsync("Js",false)
 </body>
 </html>
