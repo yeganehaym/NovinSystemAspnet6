@@ -2,6 +2,7 @@
 
 using System.Reflection;
 using System.Security.Claims;
+using Hangfire;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
@@ -121,19 +122,19 @@ public class AuthController : Controller
          var rows=await _context.SaveChangesAsync();
          if (rows > 0)
          {
-            var apiKey = _configuration["sms:ghasedak:apikey"];
-            var ghasedak = new Ghasedak.Core.Api(apiKey);
-            var sendResult = await ghasedak.VerifyAsync(1, "RegtisterCode", new[] {user.MobileNumber}, otp.Code);
-            if (sendResult.Result.Code != 200)
-            {
-               throw new Exception("Send Sms Failed : " + sendResult.Result.Code);
-            }
+            BackgroundJob.Enqueue(() => SendSms(user.MobileNumber,otp.Code));
             return RedirectToAction("CheckOTPCode");
          }
       }
       return View(model);
    }
 
+   public async Task SendSms(string mobile,string otpCode)
+   {
+      var apiKey = _configuration["sms:ghasedak:apikey"];
+      var ghasedak = new Ghasedak.Core.Api(apiKey);
+      await ghasedak.VerifyAsync(1, "RegtisterCode", new[] {mobile}, otpCode);
+   }
    public IActionResult CheckOTPCode()
    {
       return View();

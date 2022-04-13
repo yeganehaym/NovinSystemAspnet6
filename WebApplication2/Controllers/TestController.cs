@@ -1,4 +1,7 @@
 ﻿using System.Security.Claims;
+using DNTPersianUtils.Core;
+using ElmahCore;
+using Hangfire;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
@@ -248,5 +251,94 @@ public class TestController : Controller
     public IActionResult ReadJsonData()
     {
         return View();
+    }
+
+    public IActionResult TestHangfire()
+    {
+        var jobId = BackgroundJob.Schedule(
+            () => WriteFile() ,
+            TimeSpan.FromMinutes(5));
+        return Content("Job Id:" + jobId );
+    }
+    
+    public IActionResult TestHangfire2()
+    {
+        RecurringJob.AddOrUpdate("Write File Every Minutes", () => WriteFile2(), Cron.Minutely);
+        return new EmptyResult();
+    }
+
+    public void WriteFile()
+    {
+        var date = DateTime.Now.ToString("HH-mm");
+        System.IO.File.WriteAllText("d:\\" + date + ".txt",date);
+    }
+    
+    public void WriteFile2()
+    {
+        var date = DateTime.Now.ToString("HH-mm");
+        System.IO.File.WriteAllText("d:\\recurring\\" + date + ".txt",date);
+    }
+
+    public IActionResult TestAction(string id)
+    {
+        var writer = new ExcelWriter();
+        writer.WriteExcel((row, col, value) =>
+        {
+            Console.WriteLine("Row: " + row + "-Col: " + col + "-Value:" + value);
+        });
+
+        if (id == "+")
+        {
+            writer.Math((a, b) =>
+            {
+                return a + b;
+            });
+        }
+        else if(id=="-")
+        {
+            writer.Math((a, b) =>
+            {
+                return a - b;
+            });
+        }
+        else if (id == "*")
+        {
+            writer.Math((a, b) =>
+            {
+                return a * b;
+            });
+        }
+        else
+        {
+            writer.Math((a, b) =>
+            {
+                return a / b;
+            });
+        }
+
+        var date1 = writer.DateFormatter();
+        var date2 = writer.DateFormatter(FormatDate);
+        return Content("date1=" + date1 + ".Date2=" + date2);
+    }
+
+    private string FormatDate(DateTime dateTime)
+    {
+        return dateTime.ToPersianDateTextify();
+    }
+
+    public IActionResult MakeError()
+    {
+        try
+        {
+            var i = 3 - 3;
+            var x = 4 / i;
+            return Content(x.ToString());
+        }
+        catch (Exception e)
+        {
+            ElmahExtensions.RaiseError(e);
+            Console.WriteLine(e);
+            throw;
+        }
     }
 }
