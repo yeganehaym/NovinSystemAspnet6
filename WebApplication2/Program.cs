@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using ElmahCore;
 using ElmahCore.Mvc;
+using ElmahCore.Mvc.Notifiers;
 using ElmahCore.Sql;
 using Hangfire;
 using Hangfire.Dashboard;
@@ -13,6 +14,7 @@ using WebApplication2.Data;
 using WebApplication2.Data.Entity;
 using WebApplication2.Elmah;
 using WebApplication2.Hangfire;
+using WebApplication2.Messages;
 using WebApplication2.Models.Customers;
 using WebApplication2.Services;
 
@@ -26,8 +28,12 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 });
 
 
+builder.Services.AddScoped<SmsService>();
 builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<ProductServices>();
+builder.Services.AddSingleton<ISmsManager,GhsedakSmsService>();
+
+
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
@@ -84,6 +90,7 @@ builder.Services.AddElmah<SqlErrorLog>(options =>
     options.Filters.Add(new ElmahError404());
 });
 
+builder.Services.Configure<EmailOptions>(x => builder.Configuration.Bind("smtp", x));
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

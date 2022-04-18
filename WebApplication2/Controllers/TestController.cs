@@ -1,14 +1,25 @@
-﻿using System.Security.Claims;
+﻿using System.Data;
+using System.Security.Claims;
 using DNTPersianUtils.Core;
 using ElmahCore;
 using Hangfire;
+using MailKit.Net.Smtp;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
+using Microsoft.Extensions.Options;
+using MimeKit;
+using MimeKit.Text;
+using OfficeOpenXml;
+using OfficeOpenXml.Style;
+using OfficeOpenXml.Table;
 using WebApplication2.Data;
 using WebApplication2.Data.Domains;
 using WebApplication2.Data.Entity;
+using WebApplication2.Excel;
+using WebApplication2.Messages;
 using WebApplication2.Models.Products;
+using WebApplication2.Options;
 using WebApplication2.Services;
 
 namespace WebApplication2.Controllers;
@@ -20,13 +31,24 @@ public class TestController : Controller
     private UserService _userService;
     private ProductServices _productServices;
     private IConfiguration _configuration;
+    private ISmsManager _smsManager;
+    private SmsService _smsService;
+    private IWebHostEnvironment _environment;
+    EmailOptions _emailOptions;
 
-    public TestController(ApplicationDbContext applicationDbContext,UserService userService, ProductServices productServices, IConfiguration configuration)
+    public TestController(ApplicationDbContext applicationDbContext,UserService userService,
+        ProductServices productServices, IConfiguration configuration, ISmsManager smsManager,
+        SmsService smsService, IWebHostEnvironment environment, IOptionsSnapshot<EmailOptions> emailOptions)
     {
         _applicationDbContext = applicationDbContext;
         _userService = userService;
         _productServices = productServices;
         _configuration = configuration;
+        _smsManager = smsManager;
+        _smsService = smsService;
+        _environment = environment;
+        _emailOptions = emailOptions.Value;
+        
     }
     public IActionResult Index()
     {
@@ -340,5 +362,159 @@ public class TestController : Controller
             Console.WriteLine(e);
             throw;
         }
+    }
+
+    public async Task<IActionResult> SendSmsByInterface()
+    {
+        /*ISmsManager smsManager = new KavehNegarSms();
+        await smsManager.SendSmsAsync("0913", "test");
+        smsManager = new GhsedakSmsService(_configuration);
+        await smsManager.SendSmsAsync("0913", "test");*/
+        var resul=await _smsManager.SendSmsAsync("0913", "test");
+        
+        return Content(resul);
+    }
+    public async Task<IActionResult> SendSmsByInterface2()
+    {
+        var smsManager = _smsService.GetSmsManger(1);
+        var result = await smsManager.SendSmsAsync("0913", "test");
+        return Content(result);
+    }
+
+    public IActionResult ReadExcelByEpPlus()
+    {
+        var excel = new EpPlusReader();
+        var path = Path.Combine(_environment.WebRootPath, "nomre.xlsx");
+        var table = excel.ReadExcel(path);
+
+        var s = "";
+        foreach (DataRow row in table.Rows)
+        {
+            var col1 = row[0].ToString();
+            var col2 = row[1].ToString();
+            var col3 = row[2].ToString();
+            s += col1 + ":" + col2 + ":" + col3 + "-";
+        }
+
+        return Content(s);
+    }
+    
+    public IActionResult ReadExcelByReader()
+    {
+        var excel = new EDR();
+        var path = Path.Combine(_environment.WebRootPath, "nomre.xlsx");
+        var table = excel.ReadExcel(path);
+
+        var s = "";
+        foreach (DataRow row in table.Rows)
+        {
+            var col1 = row[0].ToString();
+            var col2 = row[1].ToString();
+            var col3 = row[2].ToString();
+            s += col1 + ":" + col2 + ":" + col3 + "-";
+        }
+
+        return Content(s);
+    }
+
+    public IActionResult WriteExcel()
+    {
+        var table = new DataTable();
+        var col1 = new DataColumn("Date");
+        col1.Caption = "تاریخ پرداخت";
+            
+        table.Columns.Add(col1);
+        table.Columns.Add(new DataColumn("Time")
+        {
+            Caption = "ساعت پرداخت"
+        });
+        table.Columns.Add(new DataColumn("Amount",typeof(int))
+        {
+            Caption = "مبلغ (تومان)"
+        });
+        table.Columns.Add(new DataColumn("Description")
+        {
+            Caption = "توضیحات"
+        });
+        table.Columns.Add("Status");
+        for (int i = 0; i < 5; i++)
+        {
+            var row = table.NewRow();
+            row[0] = "1400/05/" + (i + 1).ToString("00");
+            row[1] = "14:" + (i + 15).ToString("00");
+            row[2] = (i + 1) * 5000;
+            row[3] = "Description " + i;
+            row[4] = i % 2 == 0 ? "پرداخت موفق" : "پرداخت ناموفق";
+            table.Rows.Add(row);
+        }
+        
+        var path = Path.Combine(_environment.WebRootPath, "test.xlsx");
+        using (ExcelPackage package=new ExcelPackage())
+        {
+            var sheet = package.Workbook.Worksheets.Add("Payments");
+            sheet.Cells.LoadFromDataTable(table,true,TableStyles.Light5);
+                
+                
+            //رسم جدول از ستون و سط آ1
+            // worksheet.Cells["A1"].LoadFromDataTable(excelOptions.DataTable,excelOptions.ShowColumnNames, excelOptions.TableStyles);
+            //افزودن فوتر و هدر
+            sheet.HeaderFooter.FirstHeader.CenteredText = "Header Text";
+            sheet.HeaderFooter.FirstFooter.CenteredText = "Footer Text";
+            sheet.Cells.AutoFitColumns(); 
+            //کل سطر اول وسط چین شوند
+            sheet.Row(1).Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+            //همه سطرها وسط چین می شوند
+            //sheet.Rows.Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+            //اضافه نمودن حقوق قانونی
+                
+            package.Workbook.Properties.Title = "payments";
+            package.Workbook.Properties.Author = "HelpDesk 2";
+            package.Workbook.Properties.Subject = "EPPlu Tutorial";
+                
+            //وضعیت نمایشی فایل اکسل هنگام باز شدن
+            
+            sheet.View.RightToLeft = true;
+            //تعیین عرض ستون‌های جدول
+            //sheet.Column(1).Width = 14;
+            //sheet.Column(2).Width = 12;
+                
+            package.Compression = CompressionLevel.BestSpeed;
+                
+            package.SaveAs(path,"123456");
+        }
+        var fileStream = new FileStream(path, FileMode.Open);
+            
+        return File(fileStream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet","payment.xlsx");
+
+    }
+
+    public async Task<IActionResult> SendEmail()
+    {
+        var message = new MimeMessage();
+        message.From.Add(new MailboxAddress("NovinSystem", "info@novinsystem.com"));
+        message.To.Add(new MailboxAddress("Ali yeganeh", "yeganehaym@gmail.com"));
+        message.Subject = "Webinar 1400/01/30";
+
+        message.Body = new TextPart(TextFormat.Html)
+        {
+            Text = @"Hey <strong>Chandler<strong>,
+
+I just wanted to let you know that Monica and I were going to go play some paintball, you in?
+<a href='https://www.google.com'>Go to Webinar</a>
+-- Joey"
+        };
+
+        using (var client = new SmtpClient())
+        {
+            client.Connect(_emailOptions.Domain, _emailOptions.Port, false);
+
+            // Note: only needed if the SMTP server requires authentication
+            client.Authenticate(_emailOptions.Username, _emailOptions.Password);
+
+            client.Send(message);
+            client.Disconnect(true);
+        }
+
+        return Content("Email Sent");
     }
 }
